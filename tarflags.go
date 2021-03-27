@@ -33,7 +33,7 @@ func (f *FlagSet) Parse(arguments []string) error {
 	options := []string{}
 	args := []string{}
 	for _, arg1 := range arguments {
-		if len(arg1) > 0 && arg1[0] == '-' {
+		if len(arg1) > 1 && arg1[0] == '-' {
 			options = append(options, arg1[1:])
 		} else {
 			args = append(args, arg1)

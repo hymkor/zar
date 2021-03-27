@@ -19,7 +19,7 @@ func TestFlagSet(t *testing.T) {
 	const PARAM1 = "PARAMETER1"
 	const PARAM2 = "PARAMETER2"
 
-	err := f.Parse([]string{"-a", "-b", "BOPTION", "-cvf", "--remove-files", filename, PARAM1, PARAM2})
+	err := f.Parse([]string{"-a", "-b", "BOPTION", "-cvf", "--remove-files", filename, PARAM1, PARAM2, "-"})
 	if err != nil {
 		t.Fatalf("Parse() fails: %s", err.Error())
 	}
@@ -47,13 +47,16 @@ func TestFlagSet(t *testing.T) {
 	if *notSetString != "" {
 		t.Fatalf("--not-set-string: fails: expect \"\", but \"%s\"", *notSetString)
 	}
-	if n := f.NArg(); n != 2 {
+	if n := f.NArg(); n != 3 {
 		t.Fatalf("f.NArgs(): fails: expect 2, but %d", n)
 	}
 	if s := f.Arg(0); s != PARAM1 {
 		t.Fatalf("f.Arg(0): fails: expect %s, but %s", PARAM1, s)
 	}
 	if s := f.Arg(1); s != PARAM2 {
-		t.Fatalf("f.Arg(0): fails: expect %s, but %s", PARAM2, s)
+		t.Fatalf("f.Arg(1): fails: expect %s, but %s", PARAM2, s)
+	}
+	if s := f.Arg(2); s != "-" {
+		t.Fatalf("f.Arg(2): fails: expect %s, but %s", "-", s)
 	}
 }
