@@ -1,0 +1,4 @@
+github.com/zetamatta/go-windows-mbcs v0.0.0-20201115030200-c402c343cd13 h1:odoeU8ho0MvAQIx963+ggPZuNmRoojL2jDExdBT4tW4=
+github.com/zetamatta/go-windows-mbcs v0.0.0-20201115030200-c402c343cd13/go.mod h1:z97ofkI2ChMrYdiVvxvE7wYNbHA4LDXMVdf8ra0MLhs=
+golang.org/x/sys v0.0.0-20210326220804-49726bf1d181 h1:64ChN/hjER/taL4YJuA+gpLfIMT+/NFherRZixbxOhg=
+golang.org/x/sys v0.0.0-20210326220804-49726bf1d181/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=

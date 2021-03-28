@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"os"
+
+	"github.com/zetamatta/go-windows-mbcs"
 )
 
 func List(fileName string, verbose bool, w io.Writer) error {
@@ -29,7 +32,16 @@ func List(fileName string, verbose bool, w io.Writer) error {
 				f.CompressedSize64,
 				f.Modified.Format("01 _2 15:04"))
 		}
-		fmt.Fprintln(w, f.Name)
+		if f.NonUTF8 {
+			utf8, err := mbcs.AtoU([]byte(f.Name), mbcs.ACP)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+				continue
+			}
+			fmt.Fprintln(w, utf8)
+		} else {
+			fmt.Fprintln(w, f.Name)
+		}
 	}
 	return nil
 }
