@@ -15,7 +15,7 @@ func mains() error {
 		return err
 	}
 	if *flagTest {
-		return List(*flagFile, *flagVerbose, os.Stdout)
+		return List(*flagFile, flag.Args(), *flagVerbose, os.Stdout)
 	}
 	return nil
 }
