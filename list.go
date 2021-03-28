@@ -5,27 +5,17 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"os"
 )
 
 func List(fileName string, verbose bool, w io.Writer) error {
 	var zipReader *zip.Reader
 	if fileName == "-" {
-		tmpf, err := os.CreateTemp("", "zar")
+		tmpf, size, err := stdin2tmpfile()
 		if err != nil {
 			return err
 		}
-		defer func() {
-			tmpf.Close()
-			os.Remove(tmpf.Name())
-		}()
-		size, err := io.Copy(tmpf, os.Stdin)
-		if err != nil {
-			return err
-		}
-		if _, err := tmpf.Seek(0, os.SEEK_SET); err != nil {
-			return err
-		}
+		defer tmpf.Close()
+
 		zipReader, err = zip.NewReader(tmpf, size)
 		if err != nil {
 			return err
