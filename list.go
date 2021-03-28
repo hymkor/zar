@@ -19,11 +19,11 @@ func List(fileName string, verbose bool, w io.Writer) error {
 		if verbose {
 			mode := sc.Mode()
 			bit := fs.FileMode(01000)
-			for _, c := range "drwxrwxrwx" {
+			for _, c := range []byte("drwxrwxrwx") {
 				if (mode & bit) > 0 {
-					fmt.Fprintf(w, "%c", c)
+					w.Write([]byte{c})
 				} else {
-					fmt.Fprint(w, "-")
+					w.Write([]byte{'-'})
 				}
 				bit >>= 1
 			}
