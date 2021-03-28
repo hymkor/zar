@@ -2,6 +2,8 @@ package main
 
 import (
 	"archive/zip"
+
+	"github.com/zetamatta/go-windows-mbcs"
 )
 
 type ZipReadWrapper struct {
@@ -38,5 +40,37 @@ func NewZipReadWrapper(fileName string) (*ZipReadWrapper, error) {
 			Reader: &zipReadCloser.Reader,
 			closer: func() error { return zipReadCloser.Close() },
 		}, nil
+	}
+}
+
+func (z *ZipReadWrapper) NewScanner() *ZipScanner {
+	return &ZipScanner{
+		zrw:   z,
+		File:  nil,
+		index: -1,
+	}
+}
+
+type ZipScanner struct {
+	*zip.File
+	zrw   *ZipReadWrapper
+	index int
+}
+
+func (e *ZipScanner) Scan() bool {
+	e.index++
+	if e.index >= len(e.zrw.File) {
+		return false
+	}
+	e.File = e.zrw.File[e.index]
+	return true
+}
+
+func (e *ZipScanner) Name() (string, error) {
+	f := e.File
+	if f.NonUTF8 {
+		return mbcs.AtoU([]byte(f.Name), mbcs.ACP)
+	} else {
+		return f.Name, nil
 	}
 }
