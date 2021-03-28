@@ -1,33 +1,18 @@
 package main
 
 import (
-	"archive/zip"
 	"fmt"
 	"io"
 	"io/fs"
 )
 
 func List(fileName string, verbose bool, w io.Writer) error {
-	var zipReader *zip.Reader
-	if fileName == "-" {
-		tmpf, size, err := stdin2tmpfile()
-		if err != nil {
-			return err
-		}
-		defer tmpf.Close()
-
-		zipReader, err = zip.NewReader(tmpf, size)
-		if err != nil {
-			return err
-		}
-	} else {
-		zipReadCloser, err := zip.OpenReader(fileName)
-		if err != nil {
-			return err
-		}
-		defer zipReadCloser.Close()
-		zipReader = &zipReadCloser.Reader
+	zipReader, err := NewZipReadWrapper(fileName)
+	if err != nil {
+		return err
 	}
+	defer zipReader.Close()
+
 	for _, f := range zipReader.File {
 		if verbose {
 			mode := f.Mode()

@@ -22,6 +22,7 @@ func (tmpFile *TmpFile) Close() error {
 	if err := tmpFile.File.Close(); err != nil {
 		return err
 	}
+	// println("Remove tmpFile:", tmpFile.Name())
 	return os.Remove(tmpFile.Name())
 }
 
