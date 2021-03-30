@@ -6,7 +6,7 @@ import (
 	"io/fs"
 )
 
-func List(fileName string, files []string, verbose bool, w io.Writer) error {
+func list(fileName string, files []string, verbose bool, w io.Writer) error {
 	return doEach(fileName, files, func(name string, sc *ZipScanner) error {
 		if verbose {
 			mode := sc.Mode()

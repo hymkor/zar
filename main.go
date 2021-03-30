@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
@@ -16,16 +17,26 @@ func isChoosedOne(flags ...bool) bool {
 }
 
 func mains() error {
-	flag := NewFlagSet()
-	flagTest := flag.Bool("t", false, "Test")
-	flagFile := flag.String("f", "-", "Filename")
-	flagVerbose := flag.Bool("v", false, "Verbose")
+	var (
+		flag        = NewFlagSet()
+		flagTest    = flag.Bool("t", false, "Test")
+		flagExtract = flag.Bool("x", false, "Extract")
+		flagVerbose = flag.Bool("v", false, "Verbose")
+		flagFile    = flag.String("f", "-", "Filename")
+	)
 
 	if err := flag.Parse(os.Args[1:]); err != nil {
 		return err
 	}
+
+	if !isChoosedOne(*flagTest, *flagExtract) {
+		return errors.New("Choose one of -c,-t and -x")
+	}
+
 	if *flagTest {
-		return List(*flagFile, flag.Args(), *flagVerbose, os.Stdout)
+		return list(*flagFile, flag.Args(), *flagVerbose, os.Stdout)
+	} else if *flagExtract {
+		return extract(*flagFile, flag.Args(), *flagVerbose, os.Stderr)
 	}
 	return nil
 }
