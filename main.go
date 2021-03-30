@@ -5,6 +5,16 @@ import (
 	"os"
 )
 
+func isChoosedOne(flags ...bool) bool {
+	count := 0
+	for _, f := range flags {
+		if f {
+			count++
+		}
+	}
+	return count == 1
+}
+
 func mains() error {
 	flag := NewFlagSet()
 	flagTest := flag.Bool("t", false, "Test")
