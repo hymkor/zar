@@ -49,6 +49,7 @@ func List(fileName string, files []string, verbose bool, w io.Writer) error {
 		name, err := sc.Name()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err.Error())
+			continue
 		}
 		if !isMatch(name) {
 			continue
