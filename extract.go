@@ -19,7 +19,7 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 			mode := fileInfo.Mode()
 			return os.MkdirAll(name, mode)
 		}
-		w, err := os.Create(name)
+		w, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE, sc.Mode())
 		if err != nil {
 			if !os.IsNotExist(err) {
 				return err
@@ -29,7 +29,7 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 				return err
 			}
 			fmt.Fprintln(log, dir)
-			w, err = os.Create(name)
+			w, err = os.OpenFile(name, os.O_WRONLY|os.O_CREATE, sc.Mode())
 			if err != nil {
 				return err
 			}
@@ -43,6 +43,9 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 		_, err = io.Copy(w, r)
 		w.Close()
 		r.Close()
+
+		os.Chtimes(name, sc.ModTime(), sc.ModTime())
+
 		return err
 	})
 }
