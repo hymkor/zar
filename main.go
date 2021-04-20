@@ -19,6 +19,7 @@ func isChoosedOne(flags ...bool) bool {
 func mains() error {
 	var (
 		flag        = NewFlagSet()
+		flagCreate  = flag.Bool("c", false, "Create")
 		flagTest    = flag.Bool("t", false, "Test")
 		flagExtract = flag.Bool("x", false, "Extract")
 		flagVerbose = flag.Bool("v", false, "Verbose")
@@ -29,7 +30,7 @@ func mains() error {
 		return err
 	}
 
-	if !isChoosedOne(*flagTest, *flagExtract) {
+	if !isChoosedOne(*flagTest, *flagExtract, *flagCreate) {
 		return errors.New("Choose one of -c,-t and -x")
 	}
 
@@ -37,6 +38,8 @@ func mains() error {
 		return list(*flagFile, flag.Args(), *flagVerbose, os.Stdout)
 	} else if *flagExtract {
 		return extract(*flagFile, flag.Args(), *flagVerbose, os.Stderr)
+	} else if *flagCreate {
+		return create(*flagFile, flag.Args(), *flagVerbose, os.Stderr)
 	}
 	return nil
 }
