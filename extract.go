@@ -21,7 +21,17 @@ func extract(fileName string, files []string, verbose bool, w io.Writer) error {
 		}
 		w, err := os.Create(name)
 		if err != nil {
-			return err
+			if !os.IsNotExist(err) {
+				return err
+			}
+			dir := filepath.Dir(name)
+			if err := os.MkdirAll(dir, 0777); err != nil {
+				return err
+			}
+			w, err = os.Create(name)
+			if err != nil {
+				return err
+			}
 		}
 		r, err := sc.Open()
 		if err != nil {
