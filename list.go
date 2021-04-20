@@ -21,7 +21,7 @@ func list(fileName string, files []string, verbose bool, w io.Writer) error {
 			}
 			fmt.Fprintf(w, "%8d %s ",
 				sc.CompressedSize64,
-				sc.Modified.Format("01 _2 15:04"))
+				sc.Modified.Format("2006/01/02 15:04"))
 		}
 		fmt.Fprintln(w, name)
 		return nil
