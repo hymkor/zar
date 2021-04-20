@@ -1,3 +1,5 @@
+github.com/mattn/getwild v0.0.1 h1:+Nlzxt7fonj2MtO9y/rg5hxOnM3H6tuTqeD38W25jfo=
+github.com/mattn/getwild v0.0.1/go.mod h1:AG+GKQydHp7iLJn+VV+D7y8LeYs5bQ0Xz4fmKd5o1Sg=
 github.com/zetamatta/go-windows-mbcs v0.0.0-20201115030200-c402c343cd13 h1:odoeU8ho0MvAQIx963+ggPZuNmRoojL2jDExdBT4tW4=
 github.com/zetamatta/go-windows-mbcs v0.0.0-20201115030200-c402c343cd13/go.mod h1:z97ofkI2ChMrYdiVvxvE7wYNbHA4LDXMVdf8ra0MLhs=
 golang.org/x/sys v0.0.0-20210326220804-49726bf1d181 h1:64ChN/hjER/taL4YJuA+gpLfIMT+/NFherRZixbxOhg=
