@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 )
 
-func extract(fileName string, files []string, verbose bool, w io.Writer) error {
+func extract(fileName string, files []string, verbose bool, log io.Writer) error {
+	if !verbose {
+		log = io.Discard
+	}
 	return doEach(fileName, files, func(name string, sc *ZipScanner) error {
-		if verbose {
-			fmt.Fprintln(w, name)
-		}
 		name = filepath.FromSlash(name)
 		fileInfo := sc.FileInfo()
 		if fileInfo.IsDir() {
@@ -28,11 +28,13 @@ func extract(fileName string, files []string, verbose bool, w io.Writer) error {
 			if err := os.MkdirAll(dir, 0777); err != nil {
 				return err
 			}
+			fmt.Fprintln(log, dir)
 			w, err = os.Create(name)
 			if err != nil {
 				return err
 			}
 		}
+		fmt.Fprintln(log, name)
 		r, err := sc.Open()
 		if err != nil {
 			w.Close()
