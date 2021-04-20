@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+
+	"path/filepath"
 )
 
 func extract(fileName string, files []string, verbose bool, w io.Writer) error {
@@ -10,6 +13,24 @@ func extract(fileName string, files []string, verbose bool, w io.Writer) error {
 		if verbose {
 			fmt.Fprintln(w, name)
 		}
-		return nil
+		name = filepath.FromSlash(name)
+		fileInfo := sc.FileInfo()
+		if fileInfo.IsDir() {
+			mode := fileInfo.Mode()
+			return os.MkdirAll(name, mode)
+		}
+		w, err := os.Create(name)
+		if err != nil {
+			return err
+		}
+		r, err := sc.Open()
+		if err != nil {
+			w.Close()
+			return err
+		}
+		_, err = io.Copy(w, r)
+		w.Close()
+		r.Close()
+		return err
 	})
 }
