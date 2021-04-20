@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+
+	_ "github.com/mattn/getwild"
 )
 
 func isChoosedOne(flags ...bool) bool {
