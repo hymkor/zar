@@ -27,6 +27,7 @@ func mains() error {
 		flagVerbose = flag.Bool("v", false, "Verbose")
 		flagFile    = flag.String("f", "-", "Filename")
 	)
+	flag.Ignore("C")
 
 	if err := flag.Parse(os.Args[1:]); err != nil {
 		return err

@@ -8,6 +8,7 @@ import (
 type FlagSet struct {
 	bools     map[string]*bool
 	strings   map[string]*string
+	ignores   map[string]bool
 	arguments []string
 }
 
@@ -15,8 +16,13 @@ func NewFlagSet() *FlagSet {
 	return &FlagSet{
 		bools:     map[string]*bool{},
 		strings:   map[string]*string{},
+		ignores:   map[string]bool{},
 		arguments: nil,
 	}
+}
+
+func (f *FlagSet) Ignore(name string) {
+	f.ignores[name] = true
 }
 
 func (f *FlagSet) Bool(name string, value bool, _ string) *bool {
@@ -33,7 +39,7 @@ func (f *FlagSet) Parse(arguments []string) error {
 	options := []string{}
 	args := []string{}
 	for _, arg1 := range arguments {
-		if len(arg1) > 1 && arg1[0] == '-' {
+		if len(arg1) > 1 && arg1[0] == '-' && !f.ignores[arg1[1:]] {
 			options = append(options, arg1[1:])
 		} else {
 			args = append(args, arg1)

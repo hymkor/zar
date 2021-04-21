@@ -28,7 +28,9 @@ func addAFile(zw *zip.Writer, name string, log io.Writer) error {
 		}
 		for _, fileInSubDir := range subDir {
 			thePath := filepath.Join(name, fileInSubDir.Name())
-			addAFile(zw, thePath, log)
+			if err := addAFile(zw, thePath, log); err != nil {
+				return err
+			}
 		}
 		return nil
 	}
@@ -64,8 +66,28 @@ func create(zipName string, files []string, verbose bool, log io.Writer) error {
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
-	for _, name := range files {
-		addAFile(zw, name, log)
+	for i := 0; i < len(files); i++ {
+		name := files[i]
+		if name == "-C" && i+2 < len(files) {
+			origDir, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+			if err := os.Chdir(files[i+1]); err != nil {
+				return err
+			}
+			if err := addAFile(zw, files[i+2], log); err != nil {
+				return err
+			}
+			if err := os.Chdir(origDir); err != nil {
+				return err
+			}
+			i += 2
+		} else {
+			if err := addAFile(zw, name, log); err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
