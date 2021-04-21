@@ -49,11 +49,17 @@ func create(zipName string, files []string, verbose bool, log io.Writer) error {
 	if !verbose {
 		log = io.Discard
 	}
-	w, err := os.Create(zipName)
-	if err != nil {
-		return err
+	var w io.Writer
+	if zipName == "-" {
+		w = os.Stdout
+	} else {
+		_w, err := os.Create(zipName)
+		if err != nil {
+			return err
+		}
+		defer _w.Close()
+		w = _w
 	}
-	defer w.Close()
 
 	zw := zip.NewWriter(w)
 	defer zw.Close()
