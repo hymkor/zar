@@ -33,7 +33,7 @@ func mains() error {
 	}
 
 	if !isChoosedOne(*flagTest, *flagExtract, *flagCreate) {
-		return errors.New("Choose one of -c,-t and -x")
+		return errors.New("zar.exe: Must specify one of -c, -t, -x")
 	}
 
 	if *flagTest {
