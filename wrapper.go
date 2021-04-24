@@ -81,28 +81,50 @@ func (e *ZipScanner) Name() (string, error) {
 	}
 }
 
-func makeMatchingFunc(files []string) func(string) (bool, string) {
-	if files == nil || len(files) <= 0 {
+func makeMatchingFunc(pattern []string) func(string) (bool, string) {
+	if pattern == nil || len(pattern) <= 0 {
 		return func(string) (bool, string) { return true, "" }
 	}
-	_files := make([]string, len(files))
-	for i, f := range files {
-		_files[i] = filepath.ToSlash(f)
+	_patterns := make([]string, 0, len(pattern))
+	_dirs := make([]string, 0)
+	original := make(map[string]string)
+	for _, f := range pattern {
+		newName := filepath.ToSlash(f)
+		if strings.HasSuffix(newName, "/") {
+			_dirs = append(_dirs, newName)
+		} else {
+			_patterns = append(_patterns, newName)
+		}
+		original[newName] = f
 	}
-	sort.Strings(_files)
+	sort.Strings(_dirs)
+	sort.Strings(_patterns)
 
 	return func(name string) (bool, string) {
-		index := sort.Search(len(_files), func(i int) bool {
-			if m, err := path.Match(_files[i], name); err == nil && m {
+		// search dirs
+		index := sort.Search(len(_dirs), func(i int) bool {
+			if strings.HasPrefix(name, _dirs[i]) {
 				return true
 			}
-			return _files[i] >= name
+			return _dirs[i] >= name
 		})
-		if index < 0 || index >= len(_files) {
-			return false, ""
+		if index >= 0 && index < len(_dirs) {
+			if strings.HasPrefix(name, _dirs[index]) {
+				return true, original[_dirs[index]]
+			}
 		}
-		m, err := path.Match(_files[index], name)
-		return (err == nil && m), _files[index]
+		// search wildcards
+		index = sort.Search(len(_patterns), func(i int) bool {
+			if m, err := path.Match(_patterns[i], name); err == nil && m {
+				return true
+			}
+			return _patterns[i] >= name
+		})
+		if index >= 0 && index < len(_patterns) {
+			m, err := path.Match(_patterns[index], name)
+			return (err == nil && m), original[_patterns[index]]
+		}
+		return false, ""
 	}
 }
 
