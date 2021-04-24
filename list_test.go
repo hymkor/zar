@@ -24,7 +24,7 @@ func TestMakeMatchingFunc(t *testing.T) {
 	}
 
 	for _, f := range filesInZip {
-		if act := isMatch(f.file); act != f.expect {
+		if act, _ := isMatch(f.file); act != f.expect {
 			t.Fatalf(
 				"`%s` must be %v, but %v",
 				f.file,

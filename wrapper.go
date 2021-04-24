@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/zetamatta/go-windows-mbcs"
 )
@@ -80,9 +81,9 @@ func (e *ZipScanner) Name() (string, error) {
 	}
 }
 
-func makeMatchingFunc(files []string) func(string) bool {
+func makeMatchingFunc(files []string) func(string) (bool, string) {
 	if files == nil || len(files) <= 0 {
-		return func(string) bool { return true }
+		return func(string) (bool, string) { return true, "" }
 	}
 	_files := make([]string, len(files))
 	for i, f := range files {
@@ -90,7 +91,7 @@ func makeMatchingFunc(files []string) func(string) bool {
 	}
 	sort.Strings(_files)
 
-	return func(name string) bool {
+	return func(name string) (bool, string) {
 		index := sort.Search(len(_files), func(i int) bool {
 			if m, err := path.Match(_files[i], name); err == nil && m {
 				return true
@@ -98,11 +99,39 @@ func makeMatchingFunc(files []string) func(string) bool {
 			return _files[i] >= name
 		})
 		if index < 0 || index >= len(_files) {
-			return false
+			return false, ""
 		}
 		m, err := path.Match(_files[index], name)
-		return err == nil && m
+		return (err == nil && m), _files[index]
 	}
+}
+
+func FilterOptionC(args []string) ([]string, map[string]string) {
+	files := make([]string, 0, len(args))
+	fileToPut := make(map[string]string, len(args))
+	for i := 0; i < len(args); i++ {
+		if strings.HasPrefix(args[i], "-C") {
+			var dir string
+			if len(args[i]) > 2 {
+				dir = args[i][2:]
+			} else if i+1 < len(args) {
+				i++
+				dir = args[i]
+			} else {
+				break
+			}
+			if i+1 < len(args) {
+				i++
+				files = append(files, args[i])
+				fileToPut[args[i]] = dir
+			} else {
+				break
+			}
+		} else {
+			files = append(files, args[i])
+		}
+	}
+	return files, fileToPut
 }
 
 func doEach(fileName string, files []string, f func(name string, sc *ZipScanner) error) error {
@@ -112,6 +141,8 @@ func doEach(fileName string, files []string, f func(name string, sc *ZipScanner)
 	}
 	defer zipReader.Close()
 
+	var fileToPut map[string]string
+	files, fileToPut = FilterOptionC(files)
 	isMatch := makeMatchingFunc(files)
 
 	sc := zipReader.NewScanner()
@@ -121,10 +152,29 @@ func doEach(fileName string, files []string, f func(name string, sc *ZipScanner)
 			fmt.Fprintln(os.Stderr, err.Error())
 			continue
 		}
-		if !isMatch(name) {
+		ok, matchedPattern := isMatch(name)
+		if !ok {
 			continue
 		}
-		if err := f(name, sc); err != nil {
+		dir := fileToPut[matchedPattern]
+		if dir != "" {
+			saveDir, _err := os.Getwd()
+			if _err != nil {
+				return _err
+			}
+			// println("Chdir:",dir)
+			if _err := os.Chdir(dir); _err != nil {
+				return _err
+			}
+			err = f(name, sc)
+			if _err := os.Chdir(saveDir); _err != nil {
+				return _err
+			}
+			// println("Chdir:",saveDir)
+		} else {
+			err = f(name, sc)
+		}
+		if err != nil {
 			return err
 		}
 	}
