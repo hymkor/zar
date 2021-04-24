@@ -48,18 +48,6 @@ func addAFile(zw *zip.Writer, name string, log io.Writer) error {
 	return nil
 }
 
-func addAfileOn(zw *zip.Writer, name string, log io.Writer, dir string) error {
-	origDir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	if err := os.Chdir(dir); err != nil {
-		return err
-	}
-	defer os.Chdir(origDir)
-	return addAFile(zw, name, log)
-}
-
 func create(zipName string, files []string, verbose bool, log io.Writer) error {
 	if !verbose {
 		log = io.Discard
@@ -80,21 +68,23 @@ func create(zipName string, files []string, verbose bool, log io.Writer) error {
 	defer zw.Close()
 
 	for len(files) > 0 {
-		var err error
-		if len(files) >= 3 && files[0] == "-C" {
-			// -C dir file
-			err = addAfileOn(zw, files[2], log, files[1])
-			files = files[3:]
-		} else if len(files) >= 2 && strings.HasPrefix(files[0], "-C") {
-			// -Cdir file
-			err = addAfileOn(zw, files[1], log, files[0][2:])
+		if len(files) >= 2 && files[0] == "-C" {
+			// -C dir
+			if err := os.Chdir(files[1]); err != nil {
+				return err
+			}
 			files = files[2:]
-		} else {
-			err = addAFile(zw, files[0], log)
+		} else if strings.HasPrefix(files[0], "-C") {
+			// -Cdir
+			if err := os.Chdir(files[0][2:]); err != nil {
+				return err
+			}
 			files = files[1:]
-		}
-		if err != nil {
-			return err
+		} else {
+			if err := addAFile(zw, files[0], log); err != nil {
+				return err
+			}
+			files = files[1:]
 		}
 	}
 	return nil

@@ -109,25 +109,17 @@ func makeMatchingFunc(files []string) func(string) (bool, string) {
 func FilterOptionC(args []string) ([]string, map[string]string) {
 	files := make([]string, 0, len(args))
 	fileToPut := make(map[string]string, len(args))
+	dir := ""
 	for i := 0; i < len(args); i++ {
-		if strings.HasPrefix(args[i], "-C") {
-			var dir string
-			if len(args[i]) > 2 {
-				dir = args[i][2:]
-			} else if i+1 < len(args) {
-				i++
-				dir = args[i]
-			} else {
-				break
-			}
-			if i+1 < len(args) {
-				i++
-				files = append(files, args[i])
-				fileToPut[args[i]] = dir
-			} else {
-				break
-			}
+		if args[i] == "-C" && i+1 < len(args) {
+			dir = args[i+1]
+			i++
+		} else if strings.HasPrefix(args[i], "-C") {
+			dir = args[i][2:]
 		} else {
+			if dir != "" {
+				fileToPut[args[i]] = dir
+			}
 			files = append(files, args[i])
 		}
 	}
