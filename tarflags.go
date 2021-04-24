@@ -39,14 +39,43 @@ func (f *FlagSet) Parse(arguments []string) error {
 	options := []string{}
 	args := []string{}
 	for _, arg1 := range arguments {
-		if len(arg1) > 1 && arg1[0] == '-' && !f.ignores[arg1[1:]] {
-			options = append(options, arg1[1:])
+		if len(arg1) > 1 && arg1[0] == '-' {
+			var newarg1 strings.Builder
+			for i := 1; i < len(arg1); i++ {
+				if f.ignores[string(arg1[i])] {
+					args = append(args, "-"+arg1[i:])
+					break
+				} else if store, ok := f.strings[string(arg1[i])]; ok && i+1 < len(arg1) {
+					*store = arg1[i+1:]
+					break
+				} else {
+					newarg1.WriteByte(arg1[i])
+				}
+			}
+			if newarg1.Len() > 0 {
+				options = append(options, newarg1.String())
+			}
 		} else {
 			args = append(args, arg1)
 		}
 	}
 	if len(options) == 0 && len(args) > 0 {
-		options = append(options, args[0])
+		arg1 := args[0]
+		var newarg1 strings.Builder
+		for i := 0; i < len(arg1); i++ {
+			if f.ignores[string(arg1[i])] {
+				args = append(args, "-"+arg1[i:])
+				break
+			} else if store, ok := f.strings[string(arg1[i])]; ok && i+1 < len(arg1) {
+				*store = arg1[i+1:]
+				break
+			} else {
+				newarg1.WriteByte(arg1[i])
+			}
+		}
+		if newarg1.Len() > 0 {
+			options = append(options, newarg1.String())
+		}
 		args = args[1:]
 	}
 	for _, opt := range options {
