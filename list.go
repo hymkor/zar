@@ -22,6 +22,11 @@ func list(fileName string, files []string, verbose bool, w io.Writer) error {
 			fmt.Fprintf(w, "%8d %s ",
 				sc.CompressedSize64,
 				sc.Modified.Format("2006/01/02 15:04"))
+			if sc.NonUTF8 {
+				fmt.Fprint(w, "A ")
+			} else {
+				fmt.Fprint(w, "U ")
+			}
 		}
 		fmt.Fprintln(w, name)
 		return nil
