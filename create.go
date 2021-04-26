@@ -9,25 +9,17 @@ import (
 	"strings"
 )
 
-func addADir(zw *zip.Writer, dirName string, log io.Writer) error {
-	dirName = filepath.ToSlash(dirName)
-	if dirName[len(dirName)-1] != '/' {
-		dirName = dirName + "/"
-	}
-	if _, err := zw.Create(dirName); err != nil {
-		return err
-	}
-	fmt.Fprintln(log, dirName)
-	return nil
-}
-
-func addAFile(zw *zip.Writer, name string, log io.Writer) error {
-
-	srcFile, err := os.Open(name)
+func addAFile(zw *zip.Writer, thePath string, log io.Writer) error {
+	srcFile, err := os.Open(thePath)
 	if err != nil {
 		return err
 	}
-	defer srcFile.Close()
+	defer func() {
+		if srcFile != nil {
+			srcFile.Close()
+		}
+	}()
+	slashPath := filepath.ToSlash(thePath)
 
 	stat, err := srcFile.Stat()
 	if err != nil {
@@ -35,14 +27,29 @@ func addAFile(zw *zip.Writer, name string, log io.Writer) error {
 	}
 	if stat.IsDir() {
 		subDir, err := srcFile.Readdir(-1)
+
+		srcFile.Close()
+		srcFile = nil
+
 		if err != nil && err != io.EOF {
 			return err
 		}
-		if err := addADir(zw, name, log); err != nil {
+		if slashPath[len(slashPath)-1] != '/' {
+			slashPath = slashPath + "/"
+		}
+		_, err = zw.CreateHeader(
+			&zip.FileHeader{
+				Name:     slashPath,
+				NonUTF8:  false,
+				Modified: stat.ModTime(),
+			})
+		if err != nil {
 			return err
 		}
+		fmt.Fprintln(log, slashPath)
+
 		for _, fileInSubDir := range subDir {
-			thePath := filepath.Join(name, fileInSubDir.Name())
+			thePath := filepath.Join(thePath, fileInSubDir.Name())
 			if err := addAFile(zw, thePath, log); err != nil {
 				return err
 			}
@@ -50,10 +57,9 @@ func addAFile(zw *zip.Writer, name string, log io.Writer) error {
 		return nil
 	}
 
-	fileName := filepath.ToSlash(name)
 	fileInZipWriter, err := zw.CreateHeader(
 		&zip.FileHeader{
-			Name:     fileName,
+			Name:     slashPath,
 			NonUTF8:  false,
 			Modified: stat.ModTime(),
 		})
@@ -61,7 +67,7 @@ func addAFile(zw *zip.Writer, name string, log io.Writer) error {
 		return err
 	}
 	io.Copy(fileInZipWriter, srcFile)
-	fmt.Fprintln(log, fileName)
+	fmt.Fprintln(log, slashPath)
 	return nil
 }
 
