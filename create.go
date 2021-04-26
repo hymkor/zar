@@ -9,8 +9,19 @@ import (
 	"strings"
 )
 
+func addADir(zw *zip.Writer, dirName string, log io.Writer) error {
+	dirName = filepath.ToSlash(dirName)
+	if dirName[len(dirName)-1] != '/' {
+		dirName = dirName + "/"
+	}
+	if _, err := zw.Create(dirName); err != nil {
+		return err
+	}
+	fmt.Fprintln(log, dirName)
+	return nil
+}
+
 func addAFile(zw *zip.Writer, name string, log io.Writer) error {
-	fmt.Fprintln(log, name)
 
 	srcFile, err := os.Open(name)
 	if err != nil {
@@ -27,6 +38,9 @@ func addAFile(zw *zip.Writer, name string, log io.Writer) error {
 		if err != nil && err != io.EOF {
 			return err
 		}
+		if err := addADir(zw, name, log); err != nil {
+			return err
+		}
 		for _, fileInSubDir := range subDir {
 			thePath := filepath.Join(name, fileInSubDir.Name())
 			if err := addAFile(zw, thePath, log); err != nil {
@@ -35,9 +49,11 @@ func addAFile(zw *zip.Writer, name string, log io.Writer) error {
 		}
 		return nil
 	}
+
+	fileName := filepath.ToSlash(name)
 	fileInZipWriter, err := zw.CreateHeader(
 		&zip.FileHeader{
-			Name:     filepath.ToSlash(name),
+			Name:     fileName,
 			NonUTF8:  false,
 			Modified: stat.ModTime(),
 		})
@@ -45,6 +61,7 @@ func addAFile(zw *zip.Writer, name string, log io.Writer) error {
 		return err
 	}
 	io.Copy(fileInZipWriter, srcFile)
+	fmt.Fprintln(log, fileName)
 	return nil
 }
 
