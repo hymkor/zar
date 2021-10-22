@@ -23,7 +23,7 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer) ([]string, error) {
 
 	stat, err := srcFile.Stat()
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	storedFiles := []string{thePath}
 	if stat.IsDir() {

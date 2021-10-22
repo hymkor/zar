@@ -42,7 +42,7 @@ func (f *FlagSet) Parse(arguments []string) error {
 		if len(arg1) > 1 && arg1[0] == '-' {
 			if len(arg1) > 2 && arg1[1] == '-' {
 				// long option
-				options = append(options,arg1[1:])
+				options = append(options, arg1[1:])
 			} else {
 				// short options
 				var newarg1 strings.Builder
