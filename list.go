@@ -9,7 +9,7 @@ import (
 
 func list(fileName string, files []string, verbose bool, w io.Writer) error {
 	return doEach(fileName, files, func(name string, sc *ZipScanner) error {
-		if verbose {
+		if *flagMd5 {
 			reader, err := sc.Open()
 			if err != nil {
 				return err
@@ -18,7 +18,8 @@ func list(fileName string, files []string, verbose bool, w io.Writer) error {
 			io.Copy(h, reader)
 			reader.Close()
 			fmt.Fprintf(w, "%x ", h.Sum(nil))
-
+		}
+		if verbose {
 			if sc.FileInfo().IsDir() {
 				w.Write([]byte{'d'})
 			} else {

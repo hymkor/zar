@@ -18,16 +18,18 @@ func isChoosedOne(flags ...bool) bool {
 	return count == 1
 }
 
+var (
+	flag        = NewFlagSet()
+	flagCreate  = flag.Bool("c", false, "Create")
+	flagTest    = flag.Bool("t", false, "Test")
+	flagExtract = flag.Bool("x", false, "Extract")
+	flagVerbose = flag.Bool("v", false, "Verbose")
+	flagFile    = flag.String("f", "-", "Filename")
+	flagMove    = flag.Bool("remove-files", false, "RemoveFiles")
+	flagMd5     = flag.Bool("md5", false, "Show MD5SUM")
+)
+
 func mains() error {
-	var (
-		flag        = NewFlagSet()
-		flagCreate  = flag.Bool("c", false, "Create")
-		flagTest    = flag.Bool("t", false, "Test")
-		flagExtract = flag.Bool("x", false, "Extract")
-		flagVerbose = flag.Bool("v", false, "Verbose")
-		flagFile    = flag.String("f", "-", "Filename")
-		flagMove    = flag.Bool("remove-files", false, "RemoveFiles")
-	)
 	flag.Ignore("C")
 
 	if err := flag.Parse(os.Args[1:]); err != nil {
