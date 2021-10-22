@@ -26,6 +26,7 @@ func mains() error {
 		flagExtract = flag.Bool("x", false, "Extract")
 		flagVerbose = flag.Bool("v", false, "Verbose")
 		flagFile    = flag.String("f", "-", "Filename")
+		flagMove    = flag.Bool("remove-files",false,"RemoveFiles")
 	)
 	flag.Ignore("C")
 
@@ -42,7 +43,13 @@ func mains() error {
 	} else if *flagExtract {
 		return extract(*flagFile, flag.Args(), *flagVerbose, os.Stderr)
 	} else if *flagCreate {
-		return create(*flagFile, flag.Args(), *flagVerbose, os.Stderr)
+		storedFiles,err := create(*flagFile, flag.Args(), *flagVerbose, os.Stderr)
+		if err == nil && *flagMove {
+			for i := len(storedFiles) - 1 ; i >= 0 ; i-- {
+				os.Remove(storedFiles[i])
+			}
+		}
+		return err
 	}
 	return nil
 }
