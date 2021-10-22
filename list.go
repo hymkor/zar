@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
 	"io"
 	"io/fs"
@@ -9,6 +10,15 @@ import (
 func list(fileName string, files []string, verbose bool, w io.Writer) error {
 	return doEach(fileName, files, func(name string, sc *ZipScanner) error {
 		if verbose {
+			reader, err := sc.Open()
+			if err != nil {
+				return err
+			}
+			h := md5.New()
+			io.Copy(h, reader)
+			reader.Close()
+			fmt.Fprintf(w, "%x ", h.Sum(nil))
+
 			if sc.FileInfo().IsDir() {
 				w.Write([]byte{'d'})
 			} else {
