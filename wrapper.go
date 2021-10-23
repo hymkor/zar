@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/zetamatta/go-windows-mbcs"
+	"github.com/nyaosorg/go-windows-mbcs"
 )
 
 type ZipReadWrapper struct {
