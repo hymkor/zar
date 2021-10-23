@@ -47,8 +47,15 @@ func mains() error {
 	} else if *flagCreate {
 		storedFiles, err := create(*flagFile, flag.Args(), *flagVerbose, os.Stderr)
 		if err == nil && *flagMove {
+			curdir := ""
 			for i := len(storedFiles) - 1; i >= 0; i-- {
-				os.Remove(storedFiles[i])
+				if storedFiles[i].CurDir != curdir {
+					curdir = storedFiles[i].CurDir
+					os.Chdir(curdir)
+					println("chdir", curdir)
+				}
+				println("remove", storedFiles[i].Path)
+				os.Remove(storedFiles[i].Path)
 			}
 		}
 		return err
