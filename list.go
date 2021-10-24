@@ -9,7 +9,7 @@ import (
 
 func list(fileName string, files []string, verbose bool, w io.Writer) error {
 	return doEach(fileName, files, func(name string, sc *ZipScanner) error {
-		if *flagMd5 {
+		if flagMd5 {
 			reader, err := sc.Open()
 			if err != nil {
 				return err

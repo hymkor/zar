@@ -9,12 +9,7 @@ import (
 	"strings"
 )
 
-type StoredFile struct {
-	Path   string
-	CurDir string
-}
-
-func addAFile(zw *zip.Writer, thePath string, log io.Writer) ([]StoredFile, error) {
+func addAFile(zw *zip.Writer, thePath string, log io.Writer) ([]string, error) {
 	srcFile, err := os.Open(thePath)
 	if err != nil {
 		return nil, err
@@ -30,11 +25,13 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer) ([]StoredFile, erro
 	if err != nil {
 		return nil, err
 	}
-	curdir, err := os.Getwd()
+
+	fullpath, err := filepath.Abs(thePath)
 	if err != nil {
 		return nil, err
 	}
-	storedFiles := []StoredFile{StoredFile{Path: thePath, CurDir: curdir}}
+
+	storedFiles := []string{fullpath}
 	if stat.IsDir() {
 		subDir, err := srcFile.Readdir(-1)
 
@@ -83,7 +80,7 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer) ([]StoredFile, erro
 	return storedFiles, nil
 }
 
-func create(zipName string, files []string, verbose bool, log io.Writer) ([]StoredFile, error) {
+func create(zipName string, files []string, verbose bool, log io.Writer) ([]string, error) {
 	if !verbose {
 		log = io.Discard
 	}
@@ -102,7 +99,7 @@ func create(zipName string, files []string, verbose bool, log io.Writer) ([]Stor
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
-	storedFiles := make([]StoredFile, 0)
+	storedFiles := make([]string, 0)
 	for len(files) > 0 {
 		if len(files) >= 2 && files[0] == "-C" {
 			// -C dir
