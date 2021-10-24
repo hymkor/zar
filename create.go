@@ -53,7 +53,7 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Fprintln(log, slashPath)
+		fmt.Fprintln(log, "a", slashPath)
 
 		for _, fileInSubDir := range subDir {
 			thePath := filepath.Join(thePath, fileInSubDir.Name())
@@ -76,7 +76,7 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer) ([]string, error) {
 		return nil, err
 	}
 	io.Copy(fileInZipWriter, srcFile)
-	fmt.Fprintln(log, slashPath)
+	fmt.Fprintln(log, "a", slashPath)
 	return storedFiles, nil
 }
 

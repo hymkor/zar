@@ -16,6 +16,7 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 		name = filepath.FromSlash(name)
 		fileInfo := sc.FileInfo()
 		if fileInfo.IsDir() {
+			fmt.Fprintln(log, "x", name)
 			mode := fileInfo.Mode()
 			return os.MkdirAll(name, mode)
 		}
@@ -34,7 +35,7 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 				return err
 			}
 		}
-		fmt.Fprintln(log, name)
+		fmt.Fprintln(log, "x", name)
 		r, err := sc.Open()
 		if err != nil {
 			w.Close()
