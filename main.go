@@ -107,7 +107,7 @@ func mains(args []string) error {
 				if thePath == "." || thePath == ".." {
 					continue
 				}
-				// os.Remove(storedFiles[i])
+				os.Remove(storedFiles[i])
 			}
 		}
 		return err
