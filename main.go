@@ -64,6 +64,9 @@ func parseShortOption(flags string, args []string) ([]string, error) {
 }
 
 func mains(args []string) error {
+	if len(args) <= 0 {
+		return errors.New("zar.exe: Must specify one of -c, -t, -x")
+	}
 	for len(args) > 0 && len(args[0]) > 0 && args[0][0] == '-' {
 		if len(args[0]) >= 2 && args[0][1] == '-' {
 			switch args[0] {
