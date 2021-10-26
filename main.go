@@ -102,7 +102,11 @@ func mains(args []string) error {
 		storedFiles, err := create(flagFile, args, flagVerbose, os.Stderr)
 		if err == nil && flagMove {
 			for i := len(storedFiles) - 1; i >= 0; i-- {
-				fmt.Fprintln(os.Stderr, "remove", storedFiles[i])
+				thePath := storedFiles[i]
+				fmt.Fprintln(os.Stderr, "remove", thePath)
+				if thePath == "." || thePath == ".." {
+					continue
+				}
 				// os.Remove(storedFiles[i])
 			}
 		}

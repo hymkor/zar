@@ -26,12 +26,17 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer) ([]string, error) {
 		return nil, err
 	}
 
-	fullpath, err := filepath.Abs(thePath)
-	if err != nil {
-		return nil, err
+	var storedFiles []string
+	if thePath != "." || thePath != ".." {
+		fullpath, err := filepath.Abs(thePath)
+		if err != nil {
+			return nil, err
+		}
+		storedFiles = []string{fullpath}
+	} else {
+		storedFiles = []string{}
 	}
 
-	storedFiles := []string{fullpath}
 	if stat.IsDir() {
 		subDir, err := srcFile.Readdir(-1)
 
