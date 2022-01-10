@@ -89,15 +89,22 @@ func create(zipName string, files []string, verbose bool, log io.Writer) ([]stri
 	if !verbose {
 		log = io.Discard
 	}
+	succeeded := false
 	var w io.Writer
 	if zipName == "-" {
 		w = os.Stdout
 	} else {
-		_w, err := os.Create(zipName)
+		_zipName := zipName + ".tmp"
+		_w, err := os.Create(_zipName)
 		if err != nil {
 			return nil, err
 		}
-		defer _w.Close()
+		defer func() {
+			_w.Close()
+			if succeeded {
+				os.Rename(_zipName, zipName)
+			}
+		}()
 		w = _w
 	}
 
@@ -127,5 +134,6 @@ func create(zipName string, files []string, verbose bool, log io.Writer) ([]stri
 			storedFiles = append(storedFiles, _storedFiles...)
 		}
 	}
+	succeeded = true
 	return storedFiles, nil
 }
