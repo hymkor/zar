@@ -3,6 +3,8 @@ zar
 
 `zar` is the zip-clone with tar-interface.
 
+[Download binaries](https://github.com/zetamatta/zar/releases)
+
 Motivation
 ----------
 
