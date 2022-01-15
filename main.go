@@ -9,6 +9,16 @@ import (
 	_ "github.com/mattn/getwild"
 )
 
+var version string
+
+func programInfo() string {
+	name, err := os.Executable()
+	if err != nil {
+		name = "zar"
+	}
+	return fmt.Sprintf("%s %s", name, version)
+}
+
 var (
 	flagCreate  = false
 	flagTest    = false
@@ -65,7 +75,7 @@ func parseShortOption(flags string, args []string) ([]string, error) {
 
 func mains(args []string) error {
 	if len(args) <= 0 {
-		return errors.New("zar.exe: Must specify one of -c, -t, -x")
+		return fmt.Errorf("%s\nMust specify one of -c, -t, -x", programInfo())
 	}
 	for len(args) > 0 && len(args[0]) > 0 && args[0][0] == '-' {
 		if len(args[0]) >= 2 && args[0][1] == '-' {
@@ -112,7 +122,7 @@ func mains(args []string) error {
 		}
 		return err
 	} else {
-		return errors.New("zar.exe: Must specify one of -c, -t, -x")
+		return fmt.Errorf("%s\nMust specify one of -c, -t, -x", programInfo())
 	}
 	return nil
 }
