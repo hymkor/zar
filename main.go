@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/md5"
+	"crypto/sha1"
 	"crypto/sha256"
 	"errors"
 	"fmt"
@@ -86,6 +87,8 @@ func mains(args []string) error {
 			switch args[0] {
 			case "--md5":
 				flagHash = md5.New
+			case "--sha1":
+				flagHash = sha1.New
 			case "--sha256":
 				flagHash = sha256.New
 			case "--remove-files":
