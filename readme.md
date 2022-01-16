@@ -15,7 +15,9 @@ Motivation
         - `U` ... UTF8
         - `A` ... NonUTF8(ANSI)
 - Are The files contained correctly ?
-    - `zar --md5 -tvf` show MD5SUMs of contained files
+    - `zar --md5 -tvf` show md5 checksum of contained files
+    - `zar --sha1 -tvf` show sha1 checksum of contained files
+    - `zar --sha256 -tvf` show sha256 checksum of contained files
 
 ```
 $ zar --md5 -tvf zar-noversion-linux-amd64.zip
