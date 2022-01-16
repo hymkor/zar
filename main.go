@@ -1,8 +1,11 @@
 package main
 
 import (
+	"crypto/md5"
+	"crypto/sha256"
 	"errors"
 	"fmt"
+	"hash"
 	"os"
 	"path/filepath"
 
@@ -26,8 +29,9 @@ var (
 	flagVerbose = false
 	flagFile    = "-"
 	flagMove    = false
-	flagMd5     = false
 )
+
+var flagHash func() hash.Hash = nil
 
 func parseShortOption(flags string, args []string) ([]string, error) {
 	for i, c := range flags {
@@ -81,7 +85,9 @@ func mains(args []string) error {
 		if len(args[0]) >= 2 && args[0][1] == '-' {
 			switch args[0] {
 			case "--md5":
-				flagMd5 = true
+				flagHash = md5.New
+			case "--sha256":
+				flagHash = sha256.New
 			case "--remove-files":
 				flagMove = true
 			default:
