@@ -33,6 +33,7 @@ The filename encoding is always set as UTF8.
 ### Option
 
 - `--remove-files` removes files from disk after adding them to the archive.
+- `-C DIRECTORY` change directory
 
 List an archive
 ----------------
