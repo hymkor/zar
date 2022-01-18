@@ -118,7 +118,16 @@ func mains(args []string) error {
 	} else if flagExtract {
 		return extract(flagFile, args, flagVerbose, os.Stderr)
 	} else if flagCreate {
-		storedFiles, err := create(flagFile, args, flagVerbose, os.Stderr)
+		storedFiles := []string{}
+		pushStoredFile := func(string) {}
+
+		if flagMove {
+			pushStoredFile = func(fn string) {
+				storedFiles = append(storedFiles, fn)
+			}
+		}
+		err := create(flagFile, args, flagVerbose, os.Stderr, pushStoredFile)
+
 		if err == nil && flagMove {
 			for i := len(storedFiles) - 1; i >= 0; i-- {
 				thePath := storedFiles[i]
