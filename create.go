@@ -31,6 +31,9 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer, pushStoredFile func
 		if err != nil {
 			return err
 		}
+		if stat.IsDir() {
+			fullpath += string(os.PathSeparator)
+		}
 		pushStoredFile(fullpath)
 	}
 

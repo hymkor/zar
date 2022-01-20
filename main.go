@@ -131,7 +131,12 @@ func mains(args []string) error {
 		if err == nil && flagMove {
 			for i := len(storedFiles) - 1; i >= 0; i-- {
 				thePath := storedFiles[i]
-				fmt.Fprintln(os.Stderr, "rm", thePath)
+				switch thePath[len(thePath)-1] {
+				case '/', '\\':
+					fmt.Fprintln(os.Stderr, "rmdir", thePath)
+				default:
+					fmt.Fprintln(os.Stderr, "rm", thePath)
+				}
 				if thePath == "." || thePath == ".." {
 					continue
 				}
