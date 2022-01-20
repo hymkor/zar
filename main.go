@@ -82,7 +82,9 @@ func mains(args []string) error {
 	if len(args) <= 0 {
 		return fmt.Errorf("%s\nMust specify one of -c, -t, -x", programInfo())
 	}
+	parsedOptionCount := 0
 	for len(args) > 0 && len(args[0]) > 0 && args[0][0] == '-' {
+		parsedOptionCount++
 		if len(args[0]) >= 2 && args[0][1] == '-' {
 			switch args[0] {
 			case "--md5":
@@ -105,7 +107,7 @@ func mains(args []string) error {
 			}
 		}
 	}
-	if !flagCreate && !flagTest && !flagExtract {
+	if parsedOptionCount <= 0 {
 		var err error
 		args, err = parseShortOption(args[0], args[1:])
 		if err != nil {
