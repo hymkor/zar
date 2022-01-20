@@ -90,6 +90,9 @@ func create(zipName string, files []string, verbose bool, log io.Writer, pushSto
 	if zipName == "-" {
 		w = os.Stdout
 	} else {
+		if _, err := os.Stat(zipName); err == nil {
+			return fmt.Errorf("%s: already exists", zipName)
+		}
 		_zipName := zipName + ".tmp"
 		_w, err := os.Create(_zipName)
 		if err != nil {
