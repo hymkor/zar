@@ -2,7 +2,7 @@ Release Notes
 =============
 
 - Support new options: --sha1 and --sha256
-- `--remove-files -cvf` change message `remove` to `rm`
+- `--remove-files -cvf` change message `remove` to `rm` or `rmdir`
 - `-cvf` errors when zipfile already exists
 
 v0.1.0
