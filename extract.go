@@ -20,17 +20,17 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 			mode := fileInfo.Mode()
 			return os.MkdirAll(name, mode)
 		}
-		w, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE, sc.Mode())
+		w, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, sc.Mode())
 		if err != nil {
-			if !os.IsNotExist(err) {
+			if os.IsExist(err) {
 				return err
 			}
 			dir := filepath.Dir(name)
 			if err := os.MkdirAll(dir, 0777); err != nil {
 				return err
 			}
-			w, err = os.OpenFile(name, os.O_WRONLY|os.O_CREATE, sc.Mode())
 			fmt.Fprintln(log, "mkdir", dir)
+			w, err = os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, sc.Mode())
 			if err != nil {
 				return err
 			}
