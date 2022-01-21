@@ -9,6 +9,32 @@ import (
 	"strings"
 )
 
+func hasDriveLetter(path string) bool {
+	if len(path) < 2 {
+		return false
+	}
+	if path[1] != ':' {
+		return false
+	}
+	if 'A' <= path[0] && path[0] <= 'Z' {
+		return true
+	}
+	if 'a' <= path[0] && path[0] <= 'z' {
+		return true
+	}
+	return false
+}
+
+func stripDriveLetterAndRoot(path string) string {
+	if hasDriveLetter(path) {
+		path = path[2:]
+	}
+	if len(path) >= 1 && path[0] == '/' {
+		path = path[1:]
+	}
+	return path
+}
+
 func addAFile(zw *zip.Writer, thePath string, log io.Writer, pushStoredFile func(string)) error {
 	srcFile, err := os.Open(thePath)
 	if err != nil {
@@ -19,7 +45,7 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer, pushStoredFile func
 			srcFile.Close()
 		}
 	}()
-	slashPath := filepath.ToSlash(thePath)
+	slashPath := stripDriveLetterAndRoot(filepath.ToSlash(thePath))
 
 	stat, err := srcFile.Stat()
 	if err != nil {

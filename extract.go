@@ -13,7 +13,7 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 		log = io.Discard
 	}
 	return doEach(fileName, files, func(name string, sc *ZipScanner) error {
-		name = filepath.FromSlash(name)
+		name = filepath.FromSlash(stripDriveLetterAndRoot(name))
 		fileInfo := sc.FileInfo()
 		if fileInfo.IsDir() {
 			fmt.Fprintln(log, "mkdir", name)
