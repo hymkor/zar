@@ -127,9 +127,7 @@ func mains(args []string) error {
 		push := func(string) {}
 
 		if flagMove {
-			push = func(fn string) {
-				fnameStack.Push(fn)
-			}
+			push = fnameStack.Push
 		}
 		err := create(flagFile, args, flagVerbose, os.Stderr, push)
 
