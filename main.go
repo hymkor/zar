@@ -9,8 +9,11 @@ import (
 	"hash"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "github.com/mattn/getwild"
+
+	"github.com/zetamatta/zar/internal/stringstack"
 )
 
 var version string
@@ -120,19 +123,21 @@ func mains(args []string) error {
 	} else if flagExtract {
 		return extract(flagFile, args, flagVerbose, os.Stderr)
 	} else if flagCreate {
-		storedFiles := []string{}
-		pushStoredFile := func(string) {}
+		var fnameStack stringstack.Stack
+		push := func(string) {}
 
 		if flagMove {
-			pushStoredFile = func(fn string) {
-				storedFiles = append(storedFiles, fn)
+			push = func(fn string) {
+				fnameStack.Push(fn)
 			}
 		}
-		err := create(flagFile, args, flagVerbose, os.Stderr, pushStoredFile)
+		err := create(flagFile, args, flagVerbose, os.Stderr, push)
 
 		if err == nil && flagMove {
-			for i := len(storedFiles) - 1; i >= 0; i-- {
-				thePath := storedFiles[i]
+			var buffer strings.Builder
+			for fnameStack.PopTo(&buffer) {
+				thePath := buffer.String()
+
 				switch thePath[len(thePath)-1] {
 				case '/', '\\':
 					fmt.Fprintln(os.Stderr, "rmdir", thePath)
@@ -142,7 +147,9 @@ func mains(args []string) error {
 				if thePath == "." || thePath == ".." {
 					continue
 				}
-				os.Remove(storedFiles[i])
+				os.Remove(thePath)
+
+				buffer.Reset()
 			}
 		}
 		return err
