@@ -156,7 +156,6 @@ func mains(args []string) error {
 	} else {
 		return fmt.Errorf("%s\nMust specify one of -c, -t, -x", programInfo())
 	}
-	return nil
 }
 
 func main() {
