@@ -1,5 +1,10 @@
 package stringstack
 
+import (
+	"io"
+	"strings"
+)
+
 type _Node struct {
 	next   *_Node
 	top    int
@@ -13,15 +18,17 @@ func newNode(next *_Node) *_Node {
 	}
 }
 
-func (node *_Node) push(b []byte) *_Node {
-	length := len(b)
+func (node *_Node) push(s string) *_Node {
+	length := len(s)
 
 	if node.top < length+2 {
-		return newNode(node).push(b)
+		return newNode(node).push(s)
 	}
 
 	newTop := node.top - length
-	copy(node.buffer[newTop:node.top], b)
+	for i := 0; i < length; i++ {
+		node.buffer[newTop+i] = s[i]
+	}
 
 	newTop -= 2
 	node.buffer[newTop+0] = byte(length & 0xFF)
@@ -31,46 +38,42 @@ func (node *_Node) push(b []byte) *_Node {
 	return node
 }
 
-func (node *_Node) pop() (*_Node, []byte) {
+func (node *_Node) pop(buffer io.Writer) *_Node {
 	length := int(node.buffer[node.top]) + (int(node.buffer[node.top+1]) << 8)
 	node.top += 2
-	b := node.buffer[node.top : node.top+length]
+	buffer.Write(node.buffer[node.top : node.top+length])
 	node.top += length
 
 	if node.top >= len(node.buffer) {
-		return node.next, b
+		return node.next
 	}
-	return node, b
+	return node
 }
 
 type Stack struct {
 	first *_Node
 }
 
-func (stack *Stack) Push(b []byte) {
+func (stack *Stack) Push(s string) {
 	if stack.first == nil {
 		stack.first = newNode(nil)
 	}
-	stack.first = stack.first.push(b)
+	stack.first = stack.first.push(s)
 }
 
-func (stack *Stack) PushString(s string) {
-	stack.Push([]byte(s))
-}
-
-func (stack *Stack) Pop() []byte {
+func (stack *Stack) PopTo(buffer io.Writer) bool {
 	if stack.first == nil {
-		return nil
+		return false
 	}
-	var b []byte
-	stack.first, b = stack.first.pop()
-	return b
+	stack.first = stack.first.pop(buffer)
+	return true
 }
 
-func (stack *Stack) PopString() (string, bool) {
-	b := stack.Pop()
-	if b == nil {
+func (stack *Stack) Pop() (string, bool) {
+	var buffer strings.Builder
+	ok := stack.PopTo(&buffer)
+	if !ok {
 		return "", false
 	}
-	return string(b), true
+	return buffer.String(), true
 }
