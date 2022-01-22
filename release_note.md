@@ -6,6 +6,7 @@ Release Notes
 - `-c` and `-x` do not overwrite any files.
 - Fix: `zar --remove-files cvf` was not invalid command-line
 - `-c` and `-x` strip `X:/` from paths
+- `--remove-files`: reduce memory consumption
 
 v0.1.0
 ------
