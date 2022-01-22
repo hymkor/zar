@@ -8,7 +8,7 @@ import (
 type _Node struct {
 	next   *_Node
 	top    int
-	buffer [4096]byte
+	buffer [4000]byte
 }
 
 func newNode(next *_Node) *_Node {
