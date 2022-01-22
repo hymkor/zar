@@ -52,7 +52,7 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer, pushStoredFile func
 		return err
 	}
 
-	if thePath != "." || thePath != ".." {
+	if thePath != "." && thePath != ".." {
 		fullpath, err := filepath.Abs(thePath)
 		if err != nil {
 			return err
