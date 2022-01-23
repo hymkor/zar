@@ -22,27 +22,37 @@ type Stack struct {
 	first *_Node
 }
 
-func (stack *Stack) Push(s string) {
+func (stack *Stack) alloc(length int) (result []byte) {
 	if stack.first == nil {
 		stack.first = newNode(nil)
 	}
-	length := len(s)
-
 	if stack.first.top < length+2 {
 		stack.first = newNode(stack.first)
 	}
 	node := stack.first
 
 	newTop := node.top - length
-	for i := 0; i < length; i++ {
-		node.buffer[newTop+i] = s[i]
-	}
+	result = node.buffer[newTop : newTop+length]
 
 	newTop -= 2
 	node.buffer[newTop+0] = byte(length & 0xFF)
 	node.buffer[newTop+1] = byte(length >> 8)
 
 	node.top = newTop
+	return
+}
+
+func (stack *Stack) Push(s string) {
+	length := len(s)
+	buffer := stack.alloc(length)
+	for i := 0; i < length; i++ {
+		buffer[i] = s[i]
+	}
+}
+
+func (stack *Stack) PushBytes(b []byte) {
+	buffer := stack.alloc(len(b))
+	copy(buffer, b)
 }
 
 func (stack *Stack) PopTo(buffer io.Writer) bool {
