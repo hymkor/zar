@@ -18,12 +18,20 @@ func newNode(next *_Node) *_Node {
 	}
 }
 
-func (node *_Node) push(s string) *_Node {
+type Stack struct {
+	first *_Node
+}
+
+func (stack *Stack) Push(s string) {
+	if stack.first == nil {
+		stack.first = newNode(nil)
+	}
 	length := len(s)
 
-	if node.top < length+2 {
-		return newNode(node).push(s)
+	if stack.first.top < length+2 {
+		stack.first = newNode(stack.first)
 	}
+	node := stack.first
 
 	newTop := node.top - length
 	for i := 0; i < length; i++ {
@@ -35,37 +43,24 @@ func (node *_Node) push(s string) *_Node {
 	node.buffer[newTop+1] = byte(length >> 8)
 
 	node.top = newTop
-	return node
-}
-
-func (node *_Node) pop(buffer io.Writer) *_Node {
-	length := int(node.buffer[node.top]) + (int(node.buffer[node.top+1]) << 8)
-	node.top += 2
-	buffer.Write(node.buffer[node.top : node.top+length])
-	node.top += length
-
-	if node.top >= len(node.buffer) {
-		return node.next
-	}
-	return node
-}
-
-type Stack struct {
-	first *_Node
-}
-
-func (stack *Stack) Push(s string) {
-	if stack.first == nil {
-		stack.first = newNode(nil)
-	}
-	stack.first = stack.first.push(s)
 }
 
 func (stack *Stack) PopTo(buffer io.Writer) bool {
 	if stack.first == nil {
 		return false
 	}
-	stack.first = stack.first.pop(buffer)
+	node := stack.first
+
+	length := int(node.buffer[node.top]) + (int(node.buffer[node.top+1]) << 8)
+	node.top += 2
+	buffer.Write(node.buffer[node.top : node.top+length])
+	node.top += length
+
+	if node.top >= len(node.buffer) {
+		stack.first = node.next
+	} else {
+		stack.first = node
+	}
 	return true
 }
 
