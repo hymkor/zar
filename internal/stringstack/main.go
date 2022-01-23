@@ -2,7 +2,6 @@ package stringstack
 
 import (
 	"io"
-	"strings"
 )
 
 type _Node struct {
@@ -72,13 +71,4 @@ func (stack *Stack) PopTo(buffer io.Writer) bool {
 		stack.first = node
 	}
 	return true
-}
-
-func (stack *Stack) Pop() (string, bool) {
-	var buffer strings.Builder
-	ok := stack.PopTo(&buffer)
-	if !ok {
-		return "", false
-	}
-	return buffer.String(), true
 }

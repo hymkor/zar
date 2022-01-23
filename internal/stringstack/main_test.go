@@ -3,6 +3,7 @@ package stringstack
 import (
 	"fmt"
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -29,19 +30,22 @@ func TestAll(t *testing.T) {
 	println("Total String Length=", pureLen)
 	println("Overhead(stringstack)=", Heap()-baseHeap-pureLen)
 
+	var buffer1 strings.Builder
 	for i := 4000 - 1; i >= 0; i-- {
 		//println(i)
-		s, ok := stack.Pop()
+		ok := stack.PopTo(&buffer1)
 		if !ok {
 			t.Fatal("stack too short")
 			return
 		}
+		s := buffer1.String()
 		if s != fmt.Sprintf("%d", i) {
 			t.Fatalf("data diff %d and %s", i, s)
 			return
 		}
+		buffer1.Reset()
 	}
-	_, ok := stack.Pop()
+	ok := stack.PopTo(&buffer1)
 	if ok {
 		t.Fatal("could not find stack end")
 		return
