@@ -37,8 +37,6 @@ var (
 
 var flagHash func() hash.Hash = nil
 
-var openModeExtract int = os.O_WRONLY | os.O_CREATE
-
 func parseShortOption(flags string, args []string) ([]string, error) {
 	for i, c := range flags {
 		switch c {
@@ -50,8 +48,6 @@ func parseShortOption(flags string, args []string) ([]string, error) {
 			flagExtract = true
 		case 'v':
 			flagVerbose = true
-		case 'k':
-			openModeExtract |= os.O_EXCL
 		case 'f':
 			var fname string
 			if i+1 < len(flags) {
@@ -125,7 +121,7 @@ func mains(args []string) error {
 	if flagTest {
 		return list(flagFile, args, flagVerbose, os.Stdout)
 	} else if flagExtract {
-		return extract(flagFile, args, openModeExtract, flagVerbose, os.Stderr)
+		return extract(flagFile, args, flagVerbose, os.Stderr)
 	} else if flagCreate {
 		var fnameStack stringstack.Stack
 		push := func(string) {}
