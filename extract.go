@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func extract(fileName string, files []string, verbose bool, log io.Writer) error {
+func extract(fileName string, files []string, openMode int, verbose bool, log io.Writer) error {
 	if !verbose {
 		log = io.Discard
 	}
@@ -20,7 +20,7 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 			mode := fileInfo.Mode()
 			return os.MkdirAll(name, mode)
 		}
-		w, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, sc.Mode())
+		w, err := os.OpenFile(name, openMode, sc.Mode())
 		if err != nil {
 			if os.IsExist(err) {
 				return err
@@ -30,7 +30,7 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 				return err
 			}
 			fmt.Fprintln(log, "mkdir", dir)
-			w, err = os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, sc.Mode())
+			w, err = os.OpenFile(name, openMode, sc.Mode())
 			if err != nil {
 				return err
 			}
