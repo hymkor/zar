@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-- Support new options: --sha1 and --sha256
+- Support new options: --sha1, --sha256 and -k
 - `--remove-files -cvf` change message `remove` to `rm` or `rmdir`
 - `-c` and `-x` do not overwrite any files.
 - Fix: `zar --remove-files cvf` was not invalid command-line
