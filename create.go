@@ -110,6 +110,13 @@ func addAFile(zw *zip.Writer, thePath string, log io.Writer, pushStoredFile func
 	return nil
 }
 
+func yesNo(fname string) (string, error) {
+	var answer string
+	fmt.Printf("overwrite %s? [y]es, [n]o: ", fname)
+	_, err := fmt.Scanln(&answer)
+	return answer, err
+}
+
 func create(zipName string, files []string, verbose bool, log io.Writer, pushStoredFile func(string)) error {
 	if !verbose {
 		log = io.Discard
@@ -120,7 +127,14 @@ func create(zipName string, files []string, verbose bool, log io.Writer, pushSto
 		w = os.Stdout
 	} else {
 		if _, err := os.Stat(zipName); err == nil {
-			return fmt.Errorf("%s: already exists", zipName)
+			answer, err := yesNo(zipName)
+			if err != nil {
+				return err
+			}
+			if answer != "y" && answer != "Y" {
+				return fmt.Errorf("%s: canceled overwriting", zipName)
+			}
+			os.Rename(zipName, zipName+"~")
 		}
 		_zipName := zipName + ".tmp"
 		_w, err := os.Create(_zipName)
