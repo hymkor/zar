@@ -136,15 +136,15 @@ func create(zipName string, files []string, verbose bool, log io.Writer, pushSto
 			}
 			os.Rename(zipName, zipName+"~")
 		}
-		_zipName := zipName + ".tmp"
-		_w, err := os.Create(_zipName)
+		_w, err := os.CreateTemp(filepath.Dir(zipName), "zar*")
 		if err != nil {
 			return err
 		}
 		defer func() {
 			_w.Close()
+			println("remove", _w.Name())
 			if succeeded {
-				os.Rename(_zipName, zipName)
+				os.Rename(_w.Name(), zipName)
 			}
 		}()
 		w = _w
