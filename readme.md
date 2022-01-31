@@ -3,7 +3,7 @@ zar
 
 `zar` is the zip-clone with tar-interface.
 
-[Download binaries](https://github.com/zetamatta/zar/releases)
+[Download binaries](https://github.com/hymkor/zar/releases)
 
 Motivation
 ----------
@@ -15,7 +15,9 @@ Motivation
         - `U` ... UTF8
         - `A` ... NonUTF8(ANSI)
 - Are The files contained correctly ?
-    - `zar --md5 -tvf` show MD5SUMs of contained files
+    - `zar --md5 -tvf` show md5 checksum of contained files
+    - `zar --sha1 -tvf` show sha1 checksum of contained files
+    - `zar --sha256 -tvf` show sha256 checksum of contained files
 
 ```
 $ zar --md5 -tvf zar-noversion-linux-amd64.zip
@@ -33,6 +35,7 @@ The filename encoding is always set as UTF8.
 ### Option
 
 - `--remove-files` removes files from disk after adding them to the archive.
+- `-C DIRECTORY` change directory
 
 List an archive
 ----------------

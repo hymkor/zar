@@ -9,8 +9,11 @@ import (
 	"hash"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "github.com/mattn/getwild"
+
+	"github.com/zetamatta/zar/internal/stringstack"
 )
 
 var version string
@@ -82,7 +85,9 @@ func mains(args []string) error {
 	if len(args) <= 0 {
 		return fmt.Errorf("%s\nMust specify one of -c, -t, -x", programInfo())
 	}
+	parsedOptionCount := 0
 	for len(args) > 0 && len(args[0]) > 0 && args[0][0] == '-' {
+		parsedOptionCount++
 		if len(args[0]) >= 2 && args[0][1] == '-' {
 			switch args[0] {
 			case "--md5":
@@ -105,7 +110,7 @@ func mains(args []string) error {
 			}
 		}
 	}
-	if !flagCreate && !flagTest && !flagExtract {
+	if parsedOptionCount <= 0 {
 		var err error
 		args, err = parseShortOption(args[0], args[1:])
 		if err != nil {
@@ -118,22 +123,37 @@ func mains(args []string) error {
 	} else if flagExtract {
 		return extract(flagFile, args, flagVerbose, os.Stderr)
 	} else if flagCreate {
-		storedFiles, err := create(flagFile, args, flagVerbose, os.Stderr)
+		var fnameStack stringstack.Stack
+		push := func(string) {}
+
+		if flagMove {
+			push = fnameStack.Push
+		}
+		err := create(flagFile, args, flagVerbose, os.Stderr, push)
+
 		if err == nil && flagMove {
-			for i := len(storedFiles) - 1; i >= 0; i-- {
-				thePath := storedFiles[i]
-				fmt.Fprintln(os.Stderr, "remove", thePath)
+			var buffer strings.Builder
+			for fnameStack.PopTo(&buffer) {
+				thePath := buffer.String()
+
+				switch thePath[len(thePath)-1] {
+				case '/', '\\':
+					fmt.Fprintln(os.Stderr, "rmdir", thePath)
+				default:
+					fmt.Fprintln(os.Stderr, "rm", thePath)
+				}
 				if thePath == "." || thePath == ".." {
 					continue
 				}
-				os.Remove(storedFiles[i])
+				os.Remove(thePath)
+
+				buffer.Reset()
 			}
 		}
 		return err
 	} else {
 		return fmt.Errorf("%s\nMust specify one of -c, -t, -x", programInfo())
 	}
-	return nil
 }
 
 func main() {

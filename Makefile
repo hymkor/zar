@@ -10,12 +10,13 @@ else
 endif
 
 all:
+	cd internal/stringstack && go fmt
 	go fmt
-	go build $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 
 _package:
 	go fmt
-	go build $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 	zip $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXT)
 
 package:
