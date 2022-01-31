@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+v0.2.0
+------
+Feb.1, 2022
+
 - Support new options: --sha1 and --sha256
 - `--remove-files -cvf` change message `remove` to `rm` or `rmdir`
 - `-c` and `-x` show prompt before overwriting files.
