@@ -3,7 +3,7 @@ package main_test
 import (
 	"testing"
 
-	"github.com/zetamatta/zar"
+	"github.com/hymkor/zar"
 )
 
 func TestFilterOptionC(t *testing.T) {

@@ -13,7 +13,7 @@ import (
 
 	_ "github.com/mattn/getwild"
 
-	"github.com/zetamatta/zar/internal/stringstack"
+	"github.com/hymkor/zar/internal/stringstack"
 )
 
 var version string

@@ -1,4 +1,4 @@
-module github.com/zetamatta/zar
+module github.com/hymkor/zar
 
 go 1.16
 
