@@ -1,6 +1,17 @@
 Release Notes
 =============
 
+v0.2.2
+------
+Mar.2,2022
+- `-c` supports wildcard
+
+v0.2.1
+------
+Feb.19,2022
+
+- Change repository owner's name
+
 v0.2.0
 ------
 Feb.1, 2022
