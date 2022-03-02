@@ -167,9 +167,22 @@ func create(zipName string, files []string, verbose bool, log io.Writer, pushSto
 			}
 			files = files[1:]
 		} else {
-			err := addAFile(zw, files[0], log, pushStoredFile)
-			if err != nil {
-				return err
+			if strings.IndexAny(files[0], "*?") >= 0 {
+				expandedFiles, err := filepath.Glob(files[0])
+				if err != nil {
+					return fmt.Errorf("%s: Glob: %w", files[0], err)
+				}
+				for _, fn := range expandedFiles {
+					err := addAFile(zw, fn, log, pushStoredFile)
+					if err != nil {
+						return fmt.Errorf("%s: addAFile: %w", fn, err)
+					}
+				}
+			} else {
+				err := addAFile(zw, files[0], log, pushStoredFile)
+				if err != nil {
+					return fmt.Errorf("%s: AddAFile: %w", files[0], err)
+				}
 			}
 			files = files[1:]
 		}
