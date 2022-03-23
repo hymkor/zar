@@ -142,7 +142,7 @@ func create(zipName string, files []string, verbose bool, log io.Writer, pushSto
 		}
 		defer func() {
 			_w.Close()
-			println("remove", _w.Name())
+			// println("remove", _w.Name())
 			if succeeded {
 				os.Rename(_w.Name(), zipName)
 			}
