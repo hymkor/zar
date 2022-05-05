@@ -136,10 +136,9 @@ func mains(args []string) error {
 			for fnameStack.PopTo(&buffer) {
 				thePath := buffer.String()
 
-				switch thePath[len(thePath)-1] {
-				case '/', '\\':
+				if os.IsPathSeparator(thePath[len(thePath)-1]) {
 					fmt.Fprintln(os.Stderr, "rmdir", thePath)
-				default:
+				} else {
 					fmt.Fprintln(os.Stderr, "rm", thePath)
 				}
 				if thePath == "." || thePath == ".." {
