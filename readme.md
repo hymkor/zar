@@ -4,6 +4,7 @@ zar
 `zar` is the zip-clone with tar-interface.
 
 [Download binaries](https://github.com/hymkor/zar/releases)
+( To install with scoop-installer, type `scoop install https://raw.githubusercontent.com/hymkor/zar/master/zar.json` )
 
 Motivation
 ----------
