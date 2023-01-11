@@ -10,8 +10,7 @@ else
 endif
 
 all:
-	$(foreach X,$(wildcard internal/*),cd $(X) && go fmt && cd ../.. && ) :
-	go fmt
+	go fmt $(foreach X,$(wildcard internal/*),&& cd $(X) && go fmt && cd ../..)
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 
 _package:
