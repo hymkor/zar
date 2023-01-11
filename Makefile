@@ -1,5 +1,5 @@
 NAME=$(lastword $(subst /, ,$(abspath .)))
-VERSION=$(shell git.exe describe --tags 2>nul || echo noversion)
+VERSION=$(shell git.exe describe --tags 2>nul || echo v0.0.0)
 GOOPT=-ldflags "-s -w -X main.version=$(VERSION)"
 
 ifeq ($(OS),Windows_NT)
@@ -10,7 +10,7 @@ else
 endif
 
 all:
-	cd internal/stringstack && go fmt
+	$(foreach X,$(wildcard internal/*),cd $(X) && go fmt && cd ../.. && ) :
 	go fmt
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 
