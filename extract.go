@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-     securejoin "github.com/cyphar/filepath-securejoin"
 
+	"github.com/cyphar/filepath-securejoin"
 )
 
 func yesNoAllNoneQuit(fname string) (string, error) {
@@ -26,16 +26,16 @@ func extract(fileName string, files []string, verbose bool, log io.Writer) error
 	alwaysNone := false
 	rootAbs, err := filepath.Abs(".")
 	if err != nil {
-	    return err
+		return err
 	}
 	return doEach(fileName, files, func(name string, sc *ZipScanner) error {
 		name = filepath.FromSlash(stripDriveLetterAndRoot(name))
-        name = strings.TrimLeft(name, string(filepath.Separator))
+		name = strings.TrimLeft(name, string(filepath.Separator))
 
-		 name, err := securejoin.SecureJoin(rootAbs, name)
-		 if err != nil {
+		name, err := securejoin.SecureJoin(rootAbs, name)
+		if err != nil {
 			return err
-		    }
+		}
 		fileInfo := sc.FileInfo()
 
 		if fileInfo.IsDir() {
