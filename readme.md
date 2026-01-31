@@ -1,24 +1,26 @@
 zar
 ===
 
-`zar` is the zip-clone with tar-interface.
+<!-- pwsh -Command "badges.ps1" | -->
+[![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/zar/blob/master/LICENSE)
+[![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/zar.svg)](https://pkg.go.dev/github.com/hymkor/zar)
+<!-- -->
 
-[Download binaries](https://github.com/hymkor/zar/releases)
-( To install with scoop-installer, type `scoop install https://raw.githubusercontent.com/hymkor/zar/master/zar.json` )
+`zar` is a zip clone with a tar-like interface.
 
 Motivation
 ----------
 
-- I often forget `-r` option on the native zip-interface
-    - I prefer the tar-interface. But my colleagues do not know tar-archives. I have to use zip-archives.
-- I want to know the filenames are encoded by UTF8 or not ?
+- I often forget the `-r` option in the native zip command.
+    - I prefer a tar-like interface, but my colleagues are not familiar with tar archives, so I have to use zip archives.
+- I want to know whether filenames are encoded in UTF-8.
     - The fifth field of the output that `zar tvf` indicates the encoding of the filename.
         - `U` ... UTF8
         - `A` ... NonUTF8(ANSI)
-- Are The files contained correctly ?
-    - `zar --md5 -tvf` show md5 checksum of contained files
-    - `zar --sha1 -tvf` show sha1 checksum of contained files
-    - `zar --sha256 -tvf` show sha256 checksum of contained files
+- Are the files stored correctly in the archive?
+  - `zar --md5    -tvf` shows the MD5    checksums of the files in the archive
+  - `zar --sha1   -tvf` shows the sha1   checksums of the files in the archive
+  - `zar --sha256 -tvf` shows the sha256 checksums of the files in the archive
 
 ```
 $ zar --md5 -tvf zar-noversion-linux-amd64.zip
@@ -31,12 +33,12 @@ Create an archive
 - `zar cvf ARCHIVE.zip [files...]`
 - `zar cvf - [files...] > ARCHIVE.ZIP`
 
-The filename encoding is always set as UTF8.
+Filenames are always encoded in UTF-8.
 
 ### Option
 
-- `--remove-files` removes files from disk after adding them to the archive.
-- `-C DIRECTORY` change directory
+- `--remove-files` removes files from disk after they are added to the archive.
+- `-C DIRECTORY` changes the working directory
 
 List an archive
 ----------------
@@ -46,7 +48,7 @@ List an archive
 
 ### Option
 
-- `--md5` show MD5SUMs of contained files
+- `--md5` shows MD5 checksums of files in the archive
 
 Extract an archive:
 -------------------
@@ -56,7 +58,68 @@ Extract an archive:
 
 ---
 
-- Reading the archive file from STDIN is slow because the ZIP file has the file list in the tail of the archive and we have to make a temporary file to access randomly.
+- Reading the archive from STDIN is slower because ZIP stores the file list at the end, so a temporary file is needed for random access.
 - By golang's "archive/zip" package.
 
 ![](./demo.png)
+
+Install
+-------
+
+### Manual Installation
+
+Download the binary package from [Releases](https://github.com/hymkor/zar/releases) and extract the executable.
+
+<!-- pwsh -Command "readme-install.ps1" | -->
+
+### Use [eget] installer (cross-platform)
+
+```sh
+brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
+
+cd (YOUR-BIN-DIRECTORY)
+eget hymkor/zar
+```
+
+[eget]: https://github.com/zyedidia/eget
+
+### Use [scoop]-installer (Windows only)
+
+```
+scoop install https://raw.githubusercontent.com/hymkor/zar/master/zar.json
+```
+
+or
+
+```
+scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
+scoop install zar
+```
+
+[scoop]: https://scoop.sh/
+
+### Use "go install" (requires Go toolchain)
+
+```
+go install github.com/hymkor/zar@latest
+```
+
+Note: `go install` places the executable in `$HOME/go/bin` or `$GOPATH/bin`, so you need to add this directory to your `$PATH` to run `zar`.
+<!-- -->
+
+License
+-------
+
+- MIT License
+
+Acknowledgement
+---------------
+
+- [eqawasm (Ethar A Qawasmeh)](https://github.com/eqawasm)
+
+Author
+------
+
+- [HAYAMA Kaoru (a.k.a zetamatta)](https://github.com/hymkor)
