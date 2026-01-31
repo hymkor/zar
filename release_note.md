@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+v0.2.3
+------
+Jan 31, 2026
+
 - Fix path traversal vulnerability during archive extraction. (#2, #3, thanks to @eqawasm)
 v0.2.2
 ------
